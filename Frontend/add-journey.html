@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Add New Journey - Truck Booking</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #09f;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Add New Journey</h1>
+        <form id="addJourneyForm">
+            <div class="form-group">
+                <label for="truckType">Truck Type:</label>
+                <select id="truckType" name="truckType" required>
+                    <option value="">-- Select Truck Type --</option>
+                    <option value="Light Commercial Vehicles">Light Commercial Vehicles</option>
+                    <option value="Medium Commercial Vehicles">Medium Commercial Vehicles</option>
+                    <option value="Heavy Commercial Vehicles">Heavy Commercial Vehicles</option>
+                    <option value="Container trucks">Container trucks</option>
+                    <option value="Trailer trucks">Trailer trucks</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="departureDate">Departure Date:</label>
+                <input type="date" id="departureDate" name="departureDate" required />
+            </div>
+            <div class="form-group">
+                <label for="fromCity">From City:</label>
+                <input type="text" id="fromCity" name="fromCity" required />
+            </div>
+            <div class="form-group">
+                <label for="toCity">To City:</label>
+                <input type="text" id="toCity" name="toCity" required />
+            </div>
+            <div class="form-group">
+                <label for="imageUpload">Upload Image:</label>
+                <input type="file" id="imageUpload" name="imageUpload" accept="image/*" required />
+            </div>
+            <div class="form-group">
+                <label for="phoneNumber">Phone Number:</label>
+                <input
+                    type="tel"
+                    id="phoneNumber"
+                    name="phoneNumber"
+                    required
+                    pattern="^(\+91|91)?[6-9][0-9]{9}$"
+                    placeholder="Enter your 10-digit phone number (with or without +91)"
+                    value="+91"
+                />
+            </div>
+            <button type="submit" class="btn btn-add" id="submit">Add Journey</button>
+        </form>
+    </div>
+
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.814.0.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

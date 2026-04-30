@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Driver Page</title>
+  <link rel="stylesheet" href="styles.css"> <!-- Link to CSS file -->
+  <style>
+    #status {
+      margin-top: 20px;
+      font-size: 1.2rem;
+      color: #333;
+    }
+    .container {
+        width: 80%;
+        margin: 0 auto;
+        text-align: center;
+    }
+    .btn {
+        padding: 10px 20px;
+        margin: 10px;
+        font-size: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Driver Live Tracking</h1>
+    <button id="startBtn" class="btn">Start Tracking</button>
+    <button id="stopBtn" class="btn" disabled>Stop Tracking</button>
+    <div id="status">Status: Not sharing location</div>
+  </div>
+
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+  <script>
+    const socket = io('http://localhost:3000');
+    console.log("Socket connection made driver.html");
+    const startBtn = document.getElementById('startBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const statusDiv = document.getElementById('status');
+
+    let watchId = null;
+
+    startBtn.addEventListener('click', () => {
+      if (navigator.geolocation) {
+        console.log('Requesting location permission...');
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            console.log('Location permission granted');
+            statusDiv.textContent = 'Status: Sharing location...';
+            startBtn.disabled = true;
+            stopBtn.disabled = false;
+
+            watchId = navigator.geolocation.watchPosition(
+              (position) => {
+                const location = {
+                  lat: position.coords.latitude,
+                  lng: position.coords.longitude,
+                };
+                console.log('Sending location to backend:', location);
+                socket.emit('locationUpdate', location);
+              },
+              (error) => {
+                console.error('Error getting location:', error);
+                statusDiv.textContent = 'Error: Unable to share location';
+              }
+            );
+
+            console.log('Sending startTracking event to backend');
+            socket.emit('startTracking');
+          },
+          (error) => {
+            console.error('Error getting location:', error);
+            statusDiv.textContent = 'Error: Permission denied';
+          }
+        );
+      } else {
+        console.error('Geolocation is not supported by this browser');
+        statusDiv.textContent = 'Error: Geolocation is not supported by your browser';
+      }
+    });
+
+    stopBtn.addEventListener('click', () => {
+      if (watchId) {
+        console.log('Stopping location updates');
+        navigator.geolocation.clearWatch(watchId);
+        watchId = null;
+      }
+      statusDiv.textContent = 'Status: Not sharing location';
+      startBtn.disabled = false;
+      stopBtn.disabled = true;
+
+      console.log('Sending stopTracking event to backend');
+      socket.emit('stopTracking');
+    });
+  </script>
+</body>
+</html>
